@@ -1,0 +1,69 @@
+steps to create backend :
+ 1.create the http server.
+ 2.Create Api.
+ 3.Test Backend with Http Req.
+
+Q)What is an API or REST API?
+1)Applicatio program Interface (API)allow's the applications to communicate with each other.
+2)REpresentational State Transfer(REST api) is popular architecture to create web services.
+3)REST api is asoftware that allow to application to communicate with each other on internet.
+
+
+/**Steps to create a server.
+ * we use a core module given by node which is "http".
+ * crete a server object.
+ * Assign the port number.
+ * Create rquest hsndler to handle clients requests.
+ */
+
+
+//1.import http module
+
+const http = require('http');
+
+/**4.Create a request handler.
+ * Here the rquest handler function takes two parameters they are (request,response),one is used to handle requests ,other to
+ * handle repsnce.
+ */
+
+//It is better to write a seperate request handler for each type of request type.
+//Every thing we write under the request handle is API.
+const requestHandler = (request,response)=>{
+    //setting the status code.
+    // response.statusCode = 200;
+    // writing some more data to response.
+    // response.write("Hi I have recived your request")
+    // send response to client.
+    // response.end("This the response from the server");
+
+    //Identifing the type of client request:request.method
+    if(request.method==="GET") 
+    {   //if path is /users
+        if(request.url ==='/users') response.end("Users data");
+        //if path is /products
+        if(request.url ==='/products') response.end("Products data");
+        //response.end("Response for GET");
+    }
+    if(request.method==="PUT")  response.end("Response for PUT");
+    if(request.method==="POST")  response.end("Response for POST");
+    if(request.method==="DELETE")  response.end("Response for DELETE");
+
+    //Identifying the path url of the request:request.url
+
+}
+
+//2.crete a http server object.
+
+const httpServer = http.createServer(requestHandler);
+
+//3.assign a port number to http server
+
+httpServer.listen(3500,()=>{
+    console.log("Server is running");
+});
+
+
+/**
+ * The purpose of the server is to receive requests from clients and send responce to the client.
+ * So to check wether our serve is working or not we are using "REST CLIENT TOOL" to send http requests.
+ */
