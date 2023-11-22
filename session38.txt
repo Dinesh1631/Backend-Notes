@@ -1,0 +1,45 @@
+1)Custom modules:Modules made by us.
+
+2)Core Module : Modules available directly with node ,no need to explictiy import them.
+
+3)non-core Modules:Modules we need to explictily import them
+
+4)commonJS & ES6 modules:
+a)module.exports is used to export the moule from one filr to another.
+b)requie("file path"):used to import module from another module.
+
+Blocking and Non Blocking:HTTP requests are asynchronous in nature.(when client make a request,some time takes to get response)
+a)Blocking methods executes synchronously
+b)non blocking methods executes asynchronously.
+c)It is importent to deal with blocking request,because they halt the user request.
+d)Reading data of a file in node js
+  let fs = require("fs");
+//reading file synchronously
+let content = fs.readFileSync('data.txt');
+console.log(content.toString());
+let fs = require("fs");
+//reading file sunchronously
+let content = fs.readFileSync('data.txt');
+console.log(content.toString());
+console.log("Hi");
+// output:
+// good morning to all
+// how are you.
+// Hi
+
+//reading file asychronously
+
+fs.readFile('data.txt',(err,fileContent)=>{
+    if(err){
+        console.log("Err has occured");
+    }
+    else{
+        console.log(fileContent.toString());
+    }
+})
+console.log("Hi");
+
+// output:
+// Hi
+// good morning to all
+// how are you.
