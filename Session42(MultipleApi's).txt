@@ -1,0 +1,35 @@
+Multiple API's:
+1)If we try to keep multiple task performing api(user,owners,products) into a single file,then it will become
+very hard to maintain the code,add new features .This will also leads to "Inversion Of Control".
+2)To overcome this it very important to use modurlity in any programming language.
+3)Modularity:It means try to split the entire code into as many as small files ,this will make the work of the 
+developer easy.This type of code is very easy to read,debuging,maintaince,and can add new featurs in a easy way.
+4)In our ExpressServer.js contains the following things ,they are:
+        a)server.
+        b)userApi.
+        c)productApi.
+5)Now we try to split the above file into 3 diffrent files and enable communication between them.By doing this 
+we acheive the modularity to the above code ,which will make life of future developers easy.
+6)Those files are :
+      a)server.js:Contains the server and middlewres which are designed to handle errors and invalid paths.
+      b)userApi.js:Contains all the actions performed by the user api.
+      c)product.js;Contains all the actions performed by the products api.
+7)After creating all the seperate files they should be linked with the server individually so that when a request
+ comes the from the client the server can forward the request to the appoprite api,so the api can to relevent actions.
+8)If we try make the request without connection the api's to server ,then the server will throw the error "Invalid Path"
+which we have handle previously .This is because the api's cannot execute themselve's without proper communucation from
+the server.
+     **Only http sever can reveive request and send response to the client not the api's,they will just handle the request
+       and send response to the http server not to the client machine.
+9)Connecting the userApi to server:
+           a)First got userApi and create a mini-express application.Thsi can be done by using the following commands
+                  *)const exp = require("express");
+                    const userApp = exp.Router();
+          b)Then export the mini-express app to server by using:module.exports = userApp
+          c)Then goto server and import the userApp from userApi by using : userApp = require('./APIs/usersApi');
+          d)After that use the middleware function:app.use(path,app).
+                *)here path is the path of the client request.
+10)By following the above steps we can connect our api's to the server.
+
+ 
+

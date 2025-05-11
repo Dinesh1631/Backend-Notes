@@ -1,0 +1,247 @@
+Middleware:
+1)Middleware is like a function in express used to verify the object sent by the client before passing it to the requestHandler.
+   *)These are also used to handle errors.(invalid paths and normal error)
+2)It's structure is (request,response,next)=>{}
+3)request:holds request objcect,reaponece:holds responce object,next:
+4)Diffrence b/w normal requestHandler and Middleware is ,it contains an additional "next" parameter.
+5)The middleware acts like a security check between client and requestHandler ,it just checks the request made by the client is valide or not befor passing
+it to the requestHandler.There can be more than one middleware check between client and requestHandler.
+6)It will have access to request object ,because it recives the request from the client,access to responce object because if any thing goes wrong 
+it should send the message to the user,next object if everything is fine the request should be forward to the next level of check or requestHandler.
+7)Working:
+  *)Client makes a http request first the request ius received by the middleware.
+  *)Then the middleware checks the validity of the ofthe request if it valid ,it passes it next level.
+  *)If the request is invalid the the a messege is sent back to the client that his request is not valid.
+  *)We should definitly call the next function inorder to pass our client request to next middleware or next requestHandler.
+
+->Above explaination is the generic explainination of the working of the mioddleware there are alot ofother things happens in
+the process.
+
+Ways to use middleware in our application:
+1)Execute middleware for each request.
+      ->The function to be called for above thing:app.use(middleware).(midddleware is the function name,it can be given any name)
+
+2)Execute middleware for a specific request:
+     ->The function to be called for above thing:app.method(path,M-1,M-2....,(request,response)=>{}).
+     ->This is to be added for app route method.
+3) Execute middleware for sepicfic path
+    ->The function to be called for above thing:app.use(patch,middleware)
+    ->Here in path we need to specify the path of the url for which we want our middleware to execute.
+
+app.use(exp.json()):
+->It is one of the bulit in middler provided by the express(exp.json()).
+->App.use(): is used to execute the secific middleware for every request.
+->The above expression we used in the api example whenthe client is sending the data to the server.
+->before passing it to the put/post request handler we are verifying the request by using the "exp.jon()" middleware.
+->Here it is receiving the body of the request object and parsing it(it is also called body parsing middleware),here body is data sent by client.
+->To extract the body from the user object we are using the exp.json(),without this when we use request.body to excess the data from the object sent by
+->the client we wil face the undefing error.
+->It is better to decleare globally when working wuth real apis ,because it takes time to put it in every middleware route.
+
+Code of the above example:
+/**Steps to create an efficent backend
+1)Create Package.json.
+2)install "express" module.
+3)Create express appliction.
+4)Define route to handle client request.
+
+ */
+
+//step 1:Create Package.json by using terminal with command "npm init".
+
+//step2:install "express module":by using command "npm install express".
+
+//Step 3:Create express appliction.
+//whenever we import a module ,we will the content of module in respective variable.
+const exp = require("express");//"exp" has a function because express has exported function.
+
+const app = exp()  
+/**
+ * The exp() function has been called to create an object for express application.
+ * variable name can be any thing but it is good to use "app" because it in convintional use.
+ */
+
+//assigning port number
+
+app.listen(3500,()=>{
+    console.log("Server is listening on port 3500");
+});
+
+
+/**Step 4:
+ * Define routs to handle clients requests(which are also called api,every thing we write inside RequestHandler is an api)
+ * Here we create a sepetrate route for each type of request(get,post,put,delete) from client.
+ * The structure of each route is:
+ * app.METHOD[get,post,put,delete](path,request handler);
+ * app:express router object
+ * request handler:(request,response)=>{};
+ */               
+
+//Whenever we make any changes in api code ,we are restarting server manually which is not good when we are working with 
+//some lage apis,so to overcome this problem we are using a modelue called "nodmon" wchich will monitor our code and,restart 
+//the server whenever it is necessary automatically without any effort from our side.
+
+
+/**Creating User Api
+ * With this api I am going to perform the following operations
+ * get users
+ * get user by id
+ * create user
+ * update user
+ * delete user
+ */
+
+//Sample data of the users to demonstrate the real working of the apis
+
+let users = [];
+
+//creating a middleWare:
+
+const middleware = (request,response,next)=>{
+    //some lofgic to verify the validity of the user object;
+    console.log("Middleware is executed.");
+    //forward middleware to next
+     next();
+    //sending responce to client
+     //response.send("Object is invalid");
+}
+
+//Creating another middleware.
+const middleware1 = (request,response,next)=>{
+    console.log("Middleware1 is executed.");
+    next();
+}
+//use middleware1 for every request.
+    // app.use(middleware1);
+
+//use middleware for a specific request:     
+  //Add middleware function as second argument of the app.rout function.
+  //In the below case middle ware exe only when ap.get() is called.
+
+
+
+//get User API
+app.get('/get-users',(request,response)=>{
+    response.send({message:"All Users",payload:users});    
+});         
+/**
+ * Here Message : Is used to convey our message to user.
+ * Payload : carry actual data .Both are together wrapprd together into object.
+ */                                         
+
+
+
+//get User by id api
+app.get('/get-user/:id',(request,response)=>{
+    //1)first should get id from user url:
+    //This(request.params()) will returns an object{id:500}
+    let id = (+request.params.id);
+   //search try to search user object in users array by using id.
+    let user = users.find(userObj=>userObj.id==id);
+   response.send({Message:"The id of user",payload:user});
+   //console.log(user);
+});
+/**
+ * ":id" :it is url parameter takes it value from the url.
+ * 
+ */
+
+
+
+//create user api
+//body parser:
+app.use(exp.json());  //used to parse the user object.
+
+app.post('/create-user',(request,response)=>{
+    //1)Get the user name from url
+    //2)for post and put request to get data we use "request.body" function.
+    //3)even though we are defining object in put request ,when we try to acess it in put api we get an "undefind" object,
+    //to overcome this we use "body-parse"
+    let newUser = request.body; 
+    //adding the newUser to the array by usng push method
+    users.push(newUser);
+    response.send({message:"User Added to the array"});
+});
+
+
+
+
+//update user api
+app.put('/update-user',(request,response)=>{
+    //get modified user from client
+     let modifiedUser = request.body;
+    // //get indexOfexistingUser
+     let idx = users.findIndex(userObj=>userObj.id===modifiedUser.id)
+     if(idx===-1){
+        response.send({message:"User Not Found"});
+     }
+    else{
+        //replace with midified user
+     users.splice(idx,1,modifiedUser);
+     response.send({message:"User updated",payload:modifiedUser});
+    }
+});
+
+
+
+
+//delete user api
+app.delete('/delete-user/:id',(request,response)=>{
+    //get user id
+    let id = request.params.id;
+    //find user object to remove
+    let userIndexToRemove = users.findIndex(userObj=>userObj.id===id)
+    users.splice(userIndexToRemove,1,);
+    //sending responce
+    response.send("User deleted")
+});
+
+
+
+//Products api:
+
+
+//getProduct Api
+
+app.get('/get-product',(request,response)=>{
+    response.send({message:"Product received"});
+});
+
+
+//create product Api
+app.post('/create-product',(request,response)=>{
+    response.send({message:"Product created"});
+});
+
+
+//delete product api
+app.delete('/delete-product',(request,response)=>{
+    response.send({message:"Product deleted"});
+});
+
+
+/**Dealing with invalid path
+ * Because normal error handling mechasim cannot deal with invalid
+ * path error they only deal with error's inside the request handler.
+ * It also sholud be written at the last of page.
+ */
+
+const invalidPath = function(request,response,next){
+    response.send({message:"Inavlid url address"});
+}
+
+app.use("*",invalidPath);
+
+
+/**Error Handling middleware
+ * Used to handle the errors thrown by the page.
+ * Should be placed only at the end of the file.
+ * It cannot cath synchronous error,it only catchs asynchronous error.
+ * 
+ */
+
+const errorHandlingMiddleware = function(error,request,response,next){
+    response.send({message:error.message});
+}
+
+app.use(errorHandlingMiddleware);

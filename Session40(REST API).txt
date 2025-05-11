@@ -1,0 +1,170 @@
+Ceating REST API Using Express:
+->By using express module we can create the entire backend.
+1)Create Package.json.
+2)install "express" module.
+3)Create express appliction.
+4)Define route to handle client request.
+
+/**Steps to create an efficent backend
+1)Create Package.json.
+2)install "express" module.
+3)Create express appliction.
+4)Define route to handle client request.
+
+ */
+
+//step 1:Create Package.json by using terminal with command "npm init".
+
+//step2:install "express module":by using command "npm install express".
+
+//Step 3:Create express appliction.
+//whenever we import a module ,we will the content of module in respective variable.
+const exp = require("express");//"exp" has a function because express has exported function.
+
+const app = exp()  
+/**
+ * The exp() function has been called to create an object for express application.
+ * variable name can be any thing but it is good to use "app" because it in convintional use.
+ */
+
+//assigning port number
+
+app.listen(3500,()=>{
+    console.log("Server is listening on port 3500");
+});
+
+
+/**Step 4:
+ * Define routs to handle clients requests(which are also called api,every thing we write inside RequestHandler is an api)
+ * Here we create a sepetrate route for each type of request(get,post,put,delete) from client.
+ * The structure of each route is:
+ * app.METHOD[get,post,put,delete](path,request handler);
+ * app:express router object
+ * request handler:(request,response)=>{};
+ */               
+
+//Whenever we make any changes in api code ,we are restarting server manually which is not good when we are working with 
+//some lage apis,so to overcome this problem we are using a modelue called "nodmon" wchich will monitor our code and,restart 
+//the server whenever it is necessary automatically without any effort from our side.
+
+
+/**Creating User Api
+ * With this api I am going to perform the following operations
+ * get users
+ * get user by id
+ * create user
+ * update user
+ * delete user
+ */
+
+//Sample data of the users to demonstrate the real working of the apis
+
+let users = [];
+//get User API
+app.get('/get-users',(request,response)=>{
+    response.send({message:"All Users",payload:users});    
+});         
+/**
+ * Here Message : Is used to convey our message to user.
+ * Payload : carry actual data .Both are together wrapprd together into object.
+ */                                         
+
+//get User by id
+app.get('/get-user/:id',(request,response)=>{
+    //1)first should get id from user url:
+    //This(request.params()) will returns an object{id:500}
+    let id = (+request.params.id);
+   //search try to search user object in users array by using id.
+    let user = users.find(userObj=>userObj.id==id);
+   response.send({Message:"The id of user",payload:user});
+   console.log(user);
+});
+/**
+ * ":id" :it is url parameter takes it value from the url.
+ * 
+ */
+
+//create user
+//body parser:
+app.use(exp.json());
+
+app.post('/create-user',(request,response)=>{
+    //1)Get the user name from url
+    //2)for post and put request to get data we use "request.body" function.
+    //3)even though we are defining object in put request ,when we try to acess it in put api we get an "undefind" object,
+    //to overcome this we use "body-parse"
+    let newUser = request.body; 
+    //adding the newUser to the array by usng push method
+    users.push(newUser);
+    response.send({message:"User Added to the array"});
+});
+
+
+//update user
+app.put('/update-user',(request,response)=>{
+    //get modified user from client
+     let modifiedUser = request.body;
+    // //get indexOfexistingUser
+     let idx = users.findIndex(userObj=>userObj.id===modifiedUser.id)
+     if(idx===-1){
+        response.send({message:"User Not Found"});
+     }
+    else{
+        //replace with midified user
+     users.splice(idx,1,modifiedUser);
+     response.send({message:"User updated",payload:modifiedUser});
+    }
+});
+
+//delete user
+
+app.delete('/delete-user/:id',(request,response)=>{
+    //get user id
+    let id = request.params.id;
+    //find user object to remove
+    let userIndexToRemove = users.findIndex(userObj=>userObj.id===id)
+    users.splice(userIndexToRemove,1,);
+    //sending responce
+    response.send("User deleted")
+});
+
+
+test.http:
+//How many types of requests a client can make
+//1.getRequest 2.post 3.put 4.delete
+
+//Making simple get request.
+
+GET http://localhost:3500/get-users
+//we to get data or resources from backend.
+
+###
+GET http://localhost:3500/get-user/100
+//id:can be user id.
+
+###
+POST http://localhost:3500/create-user
+Content-Type: application/json
+
+{
+    "id":100,
+    "name":"Dinesh",
+    "age":21
+}
+//used to create the resources in backend.
+//Here we explictily defind content type because we are getting data from client,in case of get we are getting data from serve
+//no need to specify explictly ,because sever will always send data in the form of json.We should also define our object.
+###
+PUT http://localhost:3500/update-user
+Content-Type: application/json
+
+{
+    "id":200,
+    "name":"Dinesh Babu ",
+    "age":22
+}
+
+//used to update resources from backend.
+###
+DELETE http://localhost:3500/delete-user/id
+//used to delete resources from backend.
